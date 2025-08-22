@@ -22,6 +22,42 @@ const STREAMS = [
         type: 'raw' // Use 'hls' for JW Player on your website.
 
     },
+
+    {
+        // This is an EXAMPLE of a standard HLS stream for your website.
+        // Just uncomment it and change the URLs to add another stream.
+        alias: '/kuroba.kaito/channel/starmovies/238181',
+        source: 'http://cistakosuza.petica.info:80/Markus.Beuhler4/zUbBP5/23268',
+        type: 'raw' // Use 'hls' for JW Player on your website.
+
+    },
+
+    {
+        // This is an EXAMPLE of a standard HLS stream for your website.
+        // Just uncomment it and change the URLs to add another stream.
+        alias: '/kuroba.kaito/channel/starcrime/238981',
+        source: 'http://cistakosuza.petica.info:80/Markus.Beuhler4/zUbBP5/1553',
+        type: 'raw' // Use 'hls' for JW Player on your website.
+
+    },
+
+    {
+        // This is an EXAMPLE of a standard HLS stream for your website.
+        // Just uncomment it and change the URLs to add another stream.
+        alias: '/kuroba.kaito/channel/starchannel/287981',
+        source: 'http://cistakosuza.petica.info:80/Markus.Beuhler4/zUbBP5/178',
+        type: 'raw' // Use 'hls' for JW Player on your website.
+
+    },
+
+    {
+        // This is an EXAMPLE of a standard HLS stream for your website.
+        // Just uncomment it and change the URLs to add another stream.
+        alias: '/kuroba.kaito/channel/starlife/287881',
+        source: 'http://cistakosuza.petica.info:80/Markus.Beuhler4/zUbBP5/1378',
+        type: 'raw' // Use 'hls' for JW Player on your website.
+
+    },
     // You can add more streams here by copying the block above.
 ];
 
