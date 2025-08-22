@@ -6,8 +6,9 @@ const PORT = process.env.PORT || 3000;
 // The details of the original stream
 const ORIGINAL_HOST = "cistakosuza.petica.info:80";
 const ORIGINAL_SCHEME = "http";
+const MAX_PLAYLIST_SIZE = 15 * 1024; // 15KB buffer
 
-// Middleware to add CORS headers to every response
+// Middleware to add CORS headers
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
     next();
@@ -15,37 +16,68 @@ app.use((req, res, next) => {
 
 // The main proxy route
 app.get('/*', async (req, res) => {
-    const originalUrl = `${ORIGINAL_SCHEME}://${ORIGINAL_HOST}${req.originalUrl}`;
+    let requestPath = req.originalUrl;
     
-    console.log(`Proxying request for: ${originalUrl}`);
+    // Check if the URL is for the "raw" mode for OTT Navigator
+    const isRawRequest = req.path.startsWith('/raw/');
+    
+    if (isRawRequest) {
+        // If it's a raw request, we remove the /raw/ part before sending to the origin
+        requestPath = req.originalUrl.substring(4);
+    }
+
+    const originalUrl = `${ORIGINAL_SCHEME}://${ORIGINAL_HOST}${requestPath}`;
+    console.log(`Mode: ${isRawRequest ? 'RAW' : 'CLEAN'} | Proxying for: ${originalUrl}`);
 
     try {
         const response = await axios({
             method: 'get',
             url: originalUrl,
-            responseType: 'stream', // This is important for streaming video data
+            responseType: 'stream',
             headers: {
                 'Host': ORIGINAL_HOST,
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36'
             }
         });
 
-        // If the content is an M3U8 playlist, we don't stream it.
-        // We read it, modify it, and then send it.
-        if (req.originalUrl.includes('.m3u8') || req.originalUrl.endsWith(ORIGINAL_HOST) || req.originalUrl.endsWith('/')) {
-             const chunks = [];
-             for await (const chunk of response.data) {
-                 chunks.push(chunk);
-             }
-             let m3u8Content = Buffer.concat(chunks).toString('utf8');
-             
-             // Rewrite absolute URLs within the playlist to be relative
-             const regex = new RegExp(`${ORIGINAL_SCHEME}://${ORIGINAL_HOST}`, 'g');
-             m3u8Content = m3u8Content.replace(regex, '');
+        // IF THE REQUEST IS FOR RAW MODE (OTT NAVIGATOR)
+        if (isRawRequest) {
+            // Just pipe the raw, messy, never-ending stream. OTT Navigator can handle it.
+            response.data.pipe(res);
+            return; // Stop here for raw requests
+        }
 
-             res.send(m3u8Content);
+        // IF THE REQUEST IS FOR CLEAN MODE (JW PLAYER / WEBSITE)
+        const isManifest = requestPath.includes('.m3u8') || requestPath.endsWith('25466') || requestPath.endsWith('/');
+
+        if (isManifest) {
+            const stream = response.data;
+            let body = Buffer.from([]);
+
+            const finish = () => {
+                stream.removeListener('data', onData);
+                stream.removeListener('end', finish);
+                stream.destroy();
+                if (!res.headersSent) {
+                    let m3u8Content = body.toString('utf8');
+                    const regex = new RegExp(`${ORIGINAL_SCHEME}://${ORIGINAL_HOST}`, 'g');
+                    m3u8Content = m3u8Content.replace(regex, '');
+                    res.send(m3u8Content);
+                }
+            };
+
+            const onData = (chunk) => {
+                body = Buffer.concat([body, chunk]);
+                if (body.length > MAX_PLAYLIST_SIZE) {
+                    finish();
+                }
+            };
+            
+            stream.on('data', onData);
+            stream.on('end', finish);
+
         } else {
-            // For all other content (like .ts video segments), pipe it directly
+            // For .ts video segments, pipe them directly
             response.data.pipe(res);
         }
 
