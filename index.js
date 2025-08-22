@@ -77,7 +77,7 @@ app.get('/*', async (req, res) => {
     const streamConfig = STREAMS.find(s => s.alias === req.path);
 
     if (!streamConfig) {
-        return res.status(404).send('Stream alias not found.');
+        return res.status(404).send('Access Denied.');
     }
 
     const originalUrl = streamConfig.source;
