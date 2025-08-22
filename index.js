@@ -3,14 +3,26 @@ const axios = require('axios');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// The details of the original stream
+// --- CONFIGURATION ---
+// 1. Set the URL path you WANT to use.
+const YOUR_CUSTOM_PATH = "/kuroba.kaito/xcu182713";
+
+// 2. Set the REAL path from the source stream.
+const ACTUAL_SOURCE_PATH = "/Markus.Beuhler4/zUbBP5/25466";
+
+// 3. The details of the original stream server.
 const ORIGINAL_HOST = "cistakosuza.petica.info:80";
 const ORIGINAL_SCHEME = "http";
+// --- END CONFIGURATION ---
 
-// The main proxy route
-app.get('/*', async (req, res) => {
-    const originalUrl = `${ORIGINAL_SCHEME}://${ORIGINAL_HOST}${req.originalUrl}`;
-    console.log(`Proxying in RAW mode for: ${originalUrl}`);
+
+// This route will ONLY listen for your custom path.
+app.get(YOUR_CUSTOM_PATH, async (req, res) => {
+    
+    // When your custom path is requested, we will always fetch the real source path.
+    const originalUrl = `${ORIGINAL_SCHEME}://${ORIGINAL_HOST}${ACTUAL_SOURCE_PATH}`;
+    
+    console.log(`Masking request: ${YOUR_CUSTOM_PATH} -> ${originalUrl}`);
 
     try {
         const response = await axios({
@@ -19,11 +31,11 @@ app.get('/*', async (req, res) => {
             responseType: 'stream',
             headers: {
                 'Host': ORIGINAL_HOST,
-                'User-Agent': 'OTT-Navigator' // A simple user-agent for this player
+                'User-Agent': 'OTT-Navigator'
             }
         });
         
-        // Just pass the raw data directly through.
+        // Pass the raw data directly through.
         response.data.pipe(res);
 
     } catch (error) {
