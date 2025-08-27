@@ -64,7 +64,7 @@ const STREAMS = [
         // Just uncomment it and change the URLs to add another stream.
         alias: '/kuroba.kaito/channel/aniplus/289181',
         source: 'http://qgvwnqgr.mexamo.xyz:80/live/911FA6VS/2T3C7P57/191846.m3u8',
-        type: 'raw' // Use 'hls' for JW Player on your website.
+        type: 'hls' // Use 'hls' for JW Player on your website.
 
     },
 
