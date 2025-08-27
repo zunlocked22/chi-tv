@@ -58,6 +58,33 @@ const STREAMS = [
         type: 'raw' // Use 'hls' for JW Player on your website.
 
     },
+
+    {
+        // This is an EXAMPLE of a standard HLS stream for your website.
+        // Just uncomment it and change the URLs to add another stream.
+        alias: '/kuroba.kaito/channel/aniplus/289181',
+        source: 'http://qgvwnqgr.mexamo.xyz:80/live/911FA6VS/2T3C7P57/191846.m3u8',
+        type: 'raw' // Use 'hls' for JW Player on your website.
+
+    },
+
+    {
+        // This is an EXAMPLE of a standard HLS stream for your website.
+        // Just uncomment it and change the URLs to add another stream.
+        alias: '/kuroba.kaito/channel/animax/211181',
+        source: 'http://qgvwnqgr.mexamo.xyz:80/live/911FA6VS/2T3C7P57/45057.m3u8',
+        type: 'raw' // Use 'hls' for JW Player on your website.
+
+    },
+
+    {
+        // This is an EXAMPLE of a standard HLS stream for your website.
+        // Just uncomment it and change the URLs to add another stream.
+        alias: '/kuroba.kaito/channel/mbcplusanime/331181',
+        source: 'http://qgvwnqgr.mexamo.xyz:80/live/911FA6VS/2T3C7P57/45057.m3u8',
+        type: 'raw' // Use 'hls' for JW Player on your website.
+
+    },
     // You can add more streams here by copying the block above.
 ];
 
